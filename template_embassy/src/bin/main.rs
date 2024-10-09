@@ -1,4 +1,3 @@
-//INCLUDEFILE embassy
 #![no_std]
 #![no_main]
 
