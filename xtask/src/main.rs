@@ -96,7 +96,7 @@ fn check(workspace: &Path, chip: Chip, all_combinations: bool, build: bool) -> R
 
         // Generate a project targeting the specified chip and using the
         // specified generation options:
-        generate(workspace, &project_path, PROJECT_NAME, chip, &options)?;
+        generate(workspace, project_path, PROJECT_NAME, chip, &options)?;
 
         // Ensure that the generated project builds without errors:
         let output = Command::new("cargo")
@@ -145,7 +145,7 @@ fn enable_config_and_dependencies(config: &mut ActiveConfiguration, option: &str
         return Ok(());
     }
 
-    let option = find_option(option, &config.options)
+    let option = find_option(option, config.options)
         .ok_or_else(|| anyhow::anyhow!("Option not found: {option}"))?;
 
     for dependency in option.requires.iter() {
@@ -168,7 +168,7 @@ fn is_valid(config: &ActiveConfiguration) -> bool {
     let mut groups = HashSet::new();
 
     for item in config.selected.iter() {
-        let option = find_option(item, &config.options).unwrap();
+        let option = find_option(item, config.options).unwrap();
 
         // Option could not have been selected on UI.
         if !config.is_option_active(option) {
@@ -204,6 +204,7 @@ fn options_for_chip(chip: Chip, all_combinations: bool) -> Result<Vec<Vec<String
         _ => vec![],
     });
     for option in all_options {
+        println!("Option: {:?}", option);
         let option = find_option(&option, &template.options).unwrap();
         let mut config = ActiveConfiguration {
             chip,
@@ -217,6 +218,7 @@ fn options_for_chip(chip: Chip, all_combinations: bool) -> Result<Vec<Vec<String
             available_options.push(config.selected);
         }
     }
+    println!("Avai: {:?}", available_options);
 
     available_options.sort();
     available_options.dedup();
@@ -234,7 +236,7 @@ fn options_for_chip(chip: Chip, all_combinations: bool) -> Result<Vec<Vec<String
             options: &template.options,
         };
 
-        for j in 0..available_options.len() {
+        for (j, _) in available_options.iter().enumerate() {
             if i & (1 << j) != 0 {
                 config.selected.extend(available_options[j].clone());
             }
@@ -260,7 +262,7 @@ fn generate(
     chip: Chip,
     options: &[String],
 ) -> Result<()> {
-    let mut args = vec![
+    let mut args = [
         "run",
         "--no-default-features",
         "--",
