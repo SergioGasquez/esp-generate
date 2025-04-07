@@ -32,7 +32,7 @@ use esp_backtrace as _;
 //ENDIF
 
 //IF option("alloc")
-extern crate alloc;
+extern crate alloc
 //ENDIF
 
 #[main]
