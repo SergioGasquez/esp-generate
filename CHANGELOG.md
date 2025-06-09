@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Changed
+
+### Fixed
+
+### Removed
+
+## [0.4.0] - 2025-06-06
+
+### Added
+
 - Added option to enable Stack smashing protection (#141)
 - Enabling `probe-rs` and `vscode` together now generates `.vscode/launch.json` (#143)
 - Provide hint when esp-wifi has no scheduler (#145)
@@ -16,17 +26,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enable `esp-wifi/smoltcp` when the dependency is present (#146)
 - Enable `defmt` or `log` on all crates that know them (#148)
 - The tool now prints the selected options (#154)
-- Enable the `clippy::mem_forget` lint since mem::forget is generall not safe to use with esp-hal. (#161)
+- Enable the `clippy::mem_forget` lint since mem::forget is generally not safe to use with esp-hal. (#161)
+- Added option to enable integration with the `trouble` BLE library (#179)
+- Added `esp-bootloader-esp-idf` package (#166)
 
 ### Changed
 
 - The visual style in certain terminals no longer uses emojis (#173)
+- Add a description to the version check output (#178)
+- `esp-hal` is now pinned to avoid updating to a new prerelease by accident (#186)
+- `esp-hal` updated and pinned to `beta.1` (#166)
+- MSRV bump to 1.86 (#189)
 
 ### Fixed
 
 - The generated project no longer contains `template.yaml`. (#142)
 - Fixed parsing version output of old `espflash`. (#152)
 - Specified `defmt-03` feature for `embedded-io` and `embedded-io-async`. (#157)
+- Fixed RTT initialization without `defmt` (#183)
 
 ### Removed
 
@@ -114,7 +131,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[Unreleased]: https://github.com/esp-rs/esp-generate/compare/v0.3.1...HEAD
+[Unreleased]: https://github.com/esp-rs/esp-generate/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/esp-rs/esp-generate/compare/v0.3.1...v0.4.0
 [0.3.1]: https://github.com/esp-rs/esp-generate/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/esp-rs/esp-generate/compare/v0.2.2...v0.3.0
 [0.2.2]: https://github.com/esp-rs/esp-generate/releases/tag/v0.2.2
