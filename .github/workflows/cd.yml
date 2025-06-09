@@ -12,6 +12,8 @@ jobs:
   publish-artifacts:
     name: Generating artifacts for ${{ matrix.job.target }}
     runs-on: ${{ matrix.job.os }}
+    container:
+      image: ${{ matrix.job.container }}
     strategy:
       fail-fast: false
       matrix:
@@ -20,11 +22,13 @@ jobs:
             target: x86_64-apple-darwin
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
+            container: ubuntu:20.04
           - os: windows-latest
             target: x86_64-pc-windows-msvc
             binary-postfix: ".exe"
           - os: ubuntu-latest
             target: aarch64-unknown-linux-gnu
+            container: ubuntu:20.04
           - os: macos-latest
             target: aarch64-apple-darwin
     steps:
@@ -73,6 +77,8 @@ jobs:
     name: Publishing to Crates.io
     needs: publish-artifacts
     runs-on: ubuntu-latest
+    container:
+      image: ubuntu:2004
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
