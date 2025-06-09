@@ -27,9 +27,10 @@ options:
       - esp32s3
 
   - !Option
-    name: ble
-    display_name: Enable BLE via the esp-wifi crate.
+    name: ble-bleps
+    display_name: Enable BLE via the esp-wifi crate (bleps).
     help: esp-wifi comes with no stability guarantees at this time.
+    selection_group: ble-lib
     requires:
       - alloc
       - unstable-hal
@@ -42,9 +43,27 @@ options:
       - esp32s3
 
   - !Option
+    name: ble-trouble
+    display_name: Enable BLE via the esp-wifi crate (embassy-trouble).
+    help: esp-wifi comes with no stability guarantees at this time.
+    selection_group: ble-lib
+    requires:
+      - alloc
+      - unstable-hal
+      - embassy
+    chips:
+      - esp32
+      - esp32c2
+      - esp32c3
+      - esp32c6
+      - esp32h2
+      - esp32s3
+
+  - !Option
     name: embassy
     display_name: Add embassy framework support.
     help: esp-hal-embassy comes with no stability guarantees at this time.
+    selection_group: base-template
     requires:
       - unstable-hal
 

@@ -12,7 +12,7 @@ use esp_hal::{
     main,
     time::{Duration, Instant},
 };
-//IF option("wifi") || option("ble")
+//IF option("wifi") || option("ble-bleps")
 use esp_hal::timer::timg::TimerGroup;
 //ENDIF
 
@@ -23,7 +23,9 @@ use esp_hal::timer::timg::TimerGroup;
 //+ use defmt::info;
 //ELIF option("log")
 use log::info;
-//ENDIF probe-rs
+//ELIF option("probe-rs") // without defmt
+use rtt_target::rprintln;
+//ENDIF !defmt
 
 //IF !option("panic-handler")
 //+#[panic_handler]
@@ -40,6 +42,10 @@ use esp_backtrace as _;
 extern crate alloc;
 //ENDIF
 
+// This creates a default app-descriptor required by the esp-idf bootloader.
+// For more information see: <https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-reference/system/app_image_format.html#application-description>
+esp_bootloader_esp_idf::esp_app_desc!();
+
 #[main]
 fn main() -> ! {
     //REPLACE generate-version generate-version
@@ -48,25 +54,25 @@ fn main() -> ! {
     //IF option("probe-rs")
     //IF option("defmt")
     rtt_target::rtt_init_defmt!();
-    //ELIF option("panic-rtt-target")
-    rtt_target::rtt_init!();
+    //ELSE
+    rtt_target::rtt_init_print!();
     //ENDIF
     //ELIF option("log")
     esp_println::logger::init_logger_from_env();
     //ENDIF
 
     let config = esp_hal::Config::default().with_cpu_clock(CpuClock::max());
-    //IF option("wifi") || option("ble")
+    //IF option("wifi") || option("ble-bleps")
     let peripherals = esp_hal::init(config);
     //ELSE
     //+let _peripherals = esp_hal::init(config);
     //ENDIF
 
     //IF option("alloc")
-    esp_alloc::heap_allocator!(size: 72 * 1024);
+    esp_alloc::heap_allocator!(size: 64 * 1024);
     //ENDIF
 
-    //IF option("wifi") || option("ble")
+    //IF option("wifi") || option("ble-bleps")
     let timg0 = TimerGroup::new(peripherals.TIMG0);
     let _init = esp_wifi::init(
         timg0.timer0,
@@ -79,10 +85,12 @@ fn main() -> ! {
     loop {
         //IF option("defmt") || option("log")
         info!("Hello world!");
+        //ELIF option("probe-rs") // without defmt
+        rprintln!("Hello world!");
         //ENDIF
         let delay_start = Instant::now();
         while delay_start.elapsed() < Duration::from_millis(500) {}
     }
 
-    // for inspiration have a look at the examples at https://github.com/esp-rs/esp-hal/tree/esp-hal-v1.0.0-beta.0/examples/src/bin
+    // for inspiration have a look at the examples at https://github.com/esp-rs/esp-hal/tree/esp-hal-v1.0.0-beta.1/examples/src/bin
 }
