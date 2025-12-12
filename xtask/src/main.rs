@@ -98,6 +98,11 @@ fn check(
         let project_path = project_dir.path();
         log::info!("PROJECT PATH: {project_path:?}");
 
+        // Use a separate target directory for this project to avoid accumulating
+        // build artifacts in the shared workspace target directory:
+        let target_dir = project_path.join("target");
+        let target_dir_str = target_dir.to_string_lossy().to_string();
+
         // Generate a project targeting the specified chip and using the
         // specified generation options:
         generate(workspace, &project_path, PROJECT_NAME, chip, &options)?;
@@ -106,6 +111,7 @@ fn check(
         let output = Command::new("cargo")
             .args([if build { "build" } else { "check" }])
             .env_remove("RUSTUP_TOOLCHAIN")
+            .env("CARGO_TARGET_DIR", &target_dir_str)
             .current_dir(project_path.join(PROJECT_NAME))
             .stdout(Stdio::inherit())
             .stderr(Stdio::inherit())
@@ -119,6 +125,7 @@ fn check(
             let output = Command::new("cargo")
                 .args(["test", "--no-run"])
                 .env_remove("RUSTUP_TOOLCHAIN")
+                .env("CARGO_TARGET_DIR", &target_dir_str)
                 .current_dir(project_path.join(PROJECT_NAME))
                 .stdout(Stdio::inherit())
                 .stderr(Stdio::inherit())
@@ -132,6 +139,7 @@ fn check(
         let output = Command::new("cargo")
             .args(["clippy", "--no-deps", "--", "-Dwarnings"])
             .env_remove("RUSTUP_TOOLCHAIN")
+            .env("CARGO_TARGET_DIR", &target_dir_str)
             .current_dir(project_path.join(PROJECT_NAME))
             .stdout(Stdio::inherit())
             .stderr(Stdio::inherit())
@@ -144,6 +152,7 @@ fn check(
         let output = Command::new("cargo")
             .args(["fmt", "--", "--check"])
             .env_remove("RUSTUP_TOOLCHAIN")
+            .env("CARGO_TARGET_DIR", &target_dir_str)
             .current_dir(project_path.join(PROJECT_NAME))
             .stdout(Stdio::inherit())
             .stderr(Stdio::inherit())
