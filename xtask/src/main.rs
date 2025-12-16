@@ -104,39 +104,48 @@ fn check(
 
         // Ensure that the generated project builds without errors:
         let output = Command::new("cargo")
-            .args([if build { "build" } else { "check" }])
+            .args([
+                if build { "build" } else { "check" },
+                "--message-format=short",
+            ])
             .env_remove("RUSTUP_TOOLCHAIN")
             .current_dir(project_path.join(PROJECT_NAME))
-            .stdout(Stdio::inherit())
-            .stderr(Stdio::inherit())
             .output()?;
         if !output.status.success() {
+            eprintln!("{}", String::from_utf8_lossy(&output.stderr));
+            eprintln!("{}", String::from_utf8_lossy(&output.stdout));
             bail!("Failed to execute cargo check subcommand")
         }
 
         // Ensure that the generated test project builds also:
         if options.iter().any(|o| o == "embedded-test") {
             let output = Command::new("cargo")
-                .args(["test", "--no-run"])
+                .args(["test", "--no-run", "--message-format=short"])
                 .env_remove("RUSTUP_TOOLCHAIN")
                 .current_dir(project_path.join(PROJECT_NAME))
-                .stdout(Stdio::inherit())
-                .stderr(Stdio::inherit())
                 .output()?;
             if !output.status.success() {
+                eprintln!("{}", String::from_utf8_lossy(&output.stderr));
+                eprintln!("{}", String::from_utf8_lossy(&output.stdout));
                 bail!("Failed to execute cargo test subcommand")
             }
         }
 
         // Run clippy against the generated project to check for lint errors:
         let output = Command::new("cargo")
-            .args(["clippy", "--no-deps", "--", "-Dwarnings"])
+            .args([
+                "clippy",
+                "--no-deps",
+                "--message-format=short",
+                "--",
+                "-Dwarnings",
+            ])
             .env_remove("RUSTUP_TOOLCHAIN")
             .current_dir(project_path.join(PROJECT_NAME))
-            .stdout(Stdio::inherit())
-            .stderr(Stdio::inherit())
             .output()?;
         if !output.status.success() {
+            eprintln!("{}", String::from_utf8_lossy(&output.stderr));
+            eprintln!("{}", String::from_utf8_lossy(&output.stdout));
             bail!("Failed to execute cargo clippy subcommand")
         }
 
@@ -145,10 +154,10 @@ fn check(
             .args(["fmt", "--", "--check"])
             .env_remove("RUSTUP_TOOLCHAIN")
             .current_dir(project_path.join(PROJECT_NAME))
-            .stdout(Stdio::inherit())
-            .stderr(Stdio::inherit())
             .output()?;
         if !output.status.success() {
+            eprintln!("{}", String::from_utf8_lossy(&output.stderr));
+            eprintln!("{}", String::from_utf8_lossy(&output.stdout));
             bail!("Failed to execute cargo fmt subcommand")
         }
     }
@@ -329,12 +338,15 @@ fn generate(
 
     args.push(project_name.to_string());
 
-    Command::new("cargo")
+    let output = Command::new("cargo")
         .args(args)
         .current_dir(workspace)
-        .stdout(Stdio::inherit())
-        .stderr(Stdio::inherit())
         .output()?;
+    if !output.status.success() {
+        eprintln!("{}", String::from_utf8_lossy(&output.stderr));
+        eprintln!("{}", String::from_utf8_lossy(&output.stdout));
+        bail!("Failed to generate project");
+    }
 
     Ok(())
 }
