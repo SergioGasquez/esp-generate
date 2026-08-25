@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add an optional coding-agent guidance template submenu for selecting `AGENTS.md`, `CLAUDE.md`, `CODEX.md`, or `GEMINI.md`. (#335)
 - Generated Xtensa projects now check for the required linker and point Unix users to source espup's export file when it is missing. (#343)
-- Add an optional `Embed.toml` configuration for probe-rs projects. (#359)
+- Add an optional `Embed.toml` configuration for probe-rs projects. (#365)
 
 ### Changed
 
