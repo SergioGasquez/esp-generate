@@ -54,3 +54,8 @@ options:
     selection_group: chip
     sets:
       wokwi-board: board-esp32-s3-devkitc-1
+  - !Option
+    name: esp32s31
+    display_name: ESP32-S31
+    help: ESP32-S31 does not support BLE.
+    selection_group: chip

@@ -363,3 +363,13 @@ options:
       chip: [esp32s3]
     sets:
       remove_pins: [spi_flash, spi_psram]
+
+  # ----- ESP32-S31 -----
+  - !Option
+    name: esp32s31-generic
+    display_name: ESP32-S31 (generic)
+    selection_group: module
+    compatible:
+      chip: [esp32s31]
+    sets:
+      remove_pins: [spi_flash]
